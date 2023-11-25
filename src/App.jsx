@@ -19,7 +19,7 @@ const ProtectedRoute = ({ token, children }) => {
   const location = useLocation();
 
   if (!token) {
-    // Redirect them to the /login page, but save the current location they were trying to go to.
+    // Redirect to /login; save the current location the user was trying to access
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
