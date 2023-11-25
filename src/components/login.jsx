@@ -27,7 +27,6 @@ const Login = ({ setToken }) => {
     e.preventDefault();
 
     if (validatePassword()) {
-      // Check if the password matches the .env variable
       if (import.meta.env.VITE_PASS === password) {
         console.log('Password matched');
         setToken(true);
