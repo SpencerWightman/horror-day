@@ -40,25 +40,23 @@ const Journal = () => {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4 pt-10">
-      <div className="text-center">
-        <p className="block text-stone-500 font-extrabold py-2.5 px-4 rounded hover:cursor-default">HORRIFY ME</p>
-      </div>
       <div className="flex flex-col items-center w-full px-4">
         <textarea
+          autoFocus
           ref={textareaRef}
           value={inputText}
           onChange={handleInputChange}
           maxLength={500}
           className="mt-6 w-full sm:max-w-2xl p-2 border border-gray-300 rounded-md focus:outline-none"
-          placeholder="Type your text here..."
+          placeholder="Your journal entry..."
           style={{ overflowY: 'hidden', resize: 'none' }}
         />
-        <p className="mt-2">{inputText.length}/500</p>
+        <p className="mt-2 font-extrabold">{inputText.length}/500</p>
         <button 
           onClick={handleSubmit}
-          className="mt-4 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          className="mt-2 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
         >
-          HORRIFY
+          HORRIFY ME
         </button>
       </div>
     </div>

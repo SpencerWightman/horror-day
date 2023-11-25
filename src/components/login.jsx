@@ -52,6 +52,7 @@ const Login = ({ setToken }) => {
       <form onSubmit={handleSubmit} style={{ maxWidth: '400px', width: '100%' }}>
         <Box mb={1}>
           <TextField
+            autoFocus
             type="password"
             label="Password"
             name="password"
