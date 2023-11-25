@@ -3,8 +3,14 @@ import { useNavigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// eslint-disable-next-line react/prop-types
+const theme = createTheme({
+  palette: {
+    primary: { main: '#991b1b' }, // Your desired color
+  },
+});
+
 const Login = ({ setToken }) => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -41,12 +47,13 @@ const Login = ({ setToken }) => {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Box
       display="flex"
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      minHeight="100vh"
+      minHeight="70vh"
       p={2}
     >
       <form onSubmit={handleSubmit} style={{ maxWidth: '400px', width: '100%' }}>
@@ -62,14 +69,30 @@ const Login = ({ setToken }) => {
             error={!!error}
             fullWidth
             margin="normal"
+            color="primary" // Use the primary color from the theme
           />
         </Box>
 
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          type="submit"
+          variant="contained"
+          style={{
+            marginTop: '8px', // equivalent to mt-2 in Tailwind
+            backgroundColor: 'black',
+            color: '#b4b4b4', // equivalent to text-stone-300 in Tailwind
+            fontWeight: 'bold', // equivalent to font-extrabold in Tailwind
+            padding: '10px 16px', // equivalent to py-2.5 px-4 in Tailwind
+            borderRadius: '4px', // equivalent to rounded in Tailwind
+            transition: 'background-color 200ms', // equivalent to transition duration-200 in Tailwind
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#991b1b'} // hover:bg-red-800 in Tailwind
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'black'}
+        >
           Submit
         </Button>
       </form>
     </Box>
+    </ThemeProvider>
   );
 };
 

@@ -39,7 +39,7 @@ const Journal = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4 pt-10">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4 mt-40">
       <div className="flex flex-col items-center w-full px-4">
         <textarea
           autoFocus
@@ -47,16 +47,16 @@ const Journal = () => {
           value={inputText}
           onChange={handleInputChange}
           maxLength={500}
-          className="mt-6 w-full sm:max-w-2xl p-2 border border-gray-300 rounded-md focus:outline-none"
+          className="mt-6 sm:max-w-2xl lg:max-w-4xl p-2 border border-gray-300 rounded-md focus:outline-none"
           placeholder="Your journal entry..."
           style={{ overflowY: 'hidden', resize: 'none' }}
         />
-        <p className="mt-2 font-extrabold">{inputText.length}/500</p>
+        <p className="mt-2 py-2.5 font-extrabold">{inputText.length}/500</p>
         <button 
           onClick={handleSubmit}
           className="mt-2 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
         >
-          HORRIFY ME
+          HORRIFY
         </button>
       </div>
     </div>
