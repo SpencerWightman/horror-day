@@ -28,7 +28,7 @@ const Login = ({ setToken }) => {
 
     if (validatePassword()) {
       // Check if the password matches the .env variable
-      if (process.env.PASS === password) {
+      if (import.meta.env.VITE_PASS === password) {
         console.log('Password matched');
         setToken(true);
         navigate('/journal');

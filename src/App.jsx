@@ -19,7 +19,7 @@ const App = () => {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/gym/login" element={
+          <Route path="/login" element={
             <>
               <div className="justify-center flex">
                 <Login setToken={setToken} />
