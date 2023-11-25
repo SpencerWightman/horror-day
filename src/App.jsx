@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Login from "./components/login";
 import Journal from "./components/journal";
 import '@fontsource/roboto/300.css';
@@ -12,7 +12,6 @@ import {
   BrowserRouter,
   Navigate,
   useLocation,
-  useNavigate
 } from 'react-router-dom';
 
 const ProtectedRoute = ({ token, children }) => {

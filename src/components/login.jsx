@@ -47,6 +47,8 @@ const Login = ({ setToken }) => {
   };
 
   return (
+    <>
+    <p className="block text-stone-500 font-extrabold py-2.5 px-4 rounded hover:cursor-default">HORRIFY YOUR SHITTY DAY</p>
     <ThemeProvider theme={theme}>
     <Box
       display="flex"
@@ -93,6 +95,7 @@ const Login = ({ setToken }) => {
       </form>
     </Box>
     </ThemeProvider>
+    </>
   );
 };
 

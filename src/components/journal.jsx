@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import OpenAI from "openai";
 import templates from "../utils/templates.js"
+import addParagraphBreaks from "../utils/paragraphs.js"
+import formatTime from "../utils/format-time.js"
 
 const Journal = () => {
   const [inputText, setInputText] = useState('');
   const [LLMText, setLLMText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
+  const [countdownTime, setCountdownTime] = useState(86400); // 24hr
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
@@ -21,6 +24,16 @@ const Journal = () => {
     }
   }, [inputText]);
 
+  useEffect(() => {
+    if (countdownTime > 0 && !isLoading && LLMText) {
+      const timerId = setTimeout(() => {
+        setCountdownTime(countdownTime - 1);
+      }, 1000);
+  
+      return () => clearTimeout(timerId);
+    }
+  }, [countdownTime, isLoading, LLMText]);
+
   const generatePrompt = (inputText) => {
     const append = ' The journal entry: ';
     const prepend = ' The story should include ';
@@ -31,12 +44,11 @@ const Journal = () => {
       }
     }
 
-    // Default template if no keywords found
+    // If no keywords found
     return templates['default'] + append + inputText;
   };
 
   const handleSubmit = async () => {
-    console.log('HANDLE SUBMIT');
     setIsLoading(true);
     const prompt = generatePrompt(inputText);
     const openai = new OpenAI({
@@ -44,7 +56,6 @@ const Journal = () => {
       dangerouslyAllowBrowser: true
     });
     try {
-      console.log('TRY');
       const response = await openai.chat.completions.create({
         messages: [
           {"role": "system", "content": prompt},
@@ -54,7 +65,8 @@ const Journal = () => {
       });
   
       const data = response.choices[0].message.content
-      setLLMText(data);
+      const formattedText = addParagraphBreaks(data);
+      setLLMText(formattedText);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -63,36 +75,44 @@ const Journal = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4 mt-40">
-      <div className="flex flex-col items-center w-full px-4">
-        {isLoading || !LLMText ? (
+    <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4">
+        {isLoading ? (
+          <div className="flex justify-center items-center" style={{flex: 1}}>
+            <div className="spinner"></div>
+          </div>
+        ) : !LLMText ? (
           <>
+            {/* User input content */}
             <textarea
               autoFocus
               ref={textareaRef}
               value={inputText}
               onChange={handleInputChange}
               maxLength={500}
-              className="mt-6 sm:max-w-2xl lg:max-w-4xl p-2 border border-gray-300 rounded-md focus:outline-none"
+              className="mt-20 sm:max-w-2xl lg:max-w-4xl p-2 border border-gray-300 rounded-md focus:outline-none"
               placeholder="Your journal entry..."
               style={{ overflowY: 'hidden', resize: 'none' }}
             />
             <p className="mt-2 py-2.5 font-extrabold">{inputText.length}/500</p>
             <button 
               onClick={handleSubmit}
-              className="mt-2 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
+              className="mt-2 mb-10 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
             >
               HORRIFY
             </button>
           </>
         ) : (
-          <div style={{ color: 'white', backgroundColor: 'black', padding: '20px', marginTop: '20px' }}>
+          <>
+          <div className="countdown-timer">
+            {formatTime(countdownTime)}
+          </div>
+          <div className="mt-10 mb-10 sm:max-w-2xl lg:max-w-2xl text-black py-2.5 px-4 rounded transition duration-200">
             {LLMText}
           </div>
+          </>
         )}
-      </div>
     </div>
-  );  
+  );    
 };
 
 export default Journal;
