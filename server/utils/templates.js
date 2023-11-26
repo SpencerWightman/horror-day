@@ -12,7 +12,7 @@ const templates = {
   "job": "a harsh and unforgiving city. ",
   "coworker": "a coworker who smiles and locks eyes with the main character everytime they meet, no matter what. ",
   "partner": "an unsupportive romantic partner who doesn't believe or help the main character. ",
-  "wife": "a wife who often cuts the main character with a knife and pretends it was an acciedent. ",
+  "wife": "a wife with a terrible secret she will not reveal. ",
   "husband": "a husband who stalks the main character and denies it. ",
   "boyfriend": "an arrogant boyfriend who dies trying to save the main character. ",
   "girlfriend": "a caring girlfriend who suffers from an evil force or character. ",

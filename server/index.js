@@ -1,7 +1,5 @@
 import addParagraphBreaks from "./utils/paragraphs.js";
 import generatePrompt from "./utils/prompt.js";
-import { fileURLToPath } from 'url';
-
 import OpenAI from 'openai';
 import bcrypt from 'bcrypt';
 import express from "express";

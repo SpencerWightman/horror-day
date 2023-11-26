@@ -35,7 +35,7 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>; // Or some loading component
+    return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {

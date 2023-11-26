@@ -1,14 +1,15 @@
-import React from 'react';
 import axios from 'axios';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import formatTime from "../utils/format-time.js";
+
+const timer = 30 // 86400 for 24hrs
 
 const Journal = () => {
   const [inputText, setInputText] = useState('');
   const [LLMText, setLLMText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
-  const [countdownTime, setCountdownTime] = useState(86400); // 24hr
+  const [countdownTime, setCountdownTime] = useState(timer);
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
@@ -24,12 +25,40 @@ const Journal = () => {
   }, [inputText]);
 
   useEffect(() => {
+    const storedText = localStorage.getItem('LLMText');
+    const storedTime = localStorage.getItem('countdownTime');
+    if (storedText) {
+      setLLMText(storedText);
+    }
+    if (storedTime) {
+      setCountdownTime(parseInt(storedTime, 10));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Store LLMText and countdownTime in localStorage
+    localStorage.setItem('LLMText', LLMText);
+    localStorage.setItem('countdownTime', countdownTime.toString());
+
+    // Clear the stored values when timer hits 0
+    if (countdownTime === 0) {
+      localStorage.removeItem('LLMText');
+      localStorage.removeItem('countdownTime');
+    }
+  }, [LLMText, countdownTime]);
+
+  useEffect(() => {
     if (countdownTime > 0 && !isLoading && LLMText) {
       const timerId = setTimeout(() => {
         setCountdownTime(countdownTime - 1);
       }, 1000);
   
       return () => clearTimeout(timerId);
+    } else if (countdownTime === 0) {
+      setLLMText(''); // Reset LLMText when timer hits zero
+      setInputText('');
+      localStorage.removeItem('LLMText');
+      localStorage.removeItem('countdownTime');
     }
   }, [countdownTime, isLoading, LLMText]);
 
@@ -43,8 +72,11 @@ const Journal = () => {
           inputText
         }
       });
-      setLLMText(response);
+      setLLMText(response.data);
       setIsLoading(false);
+
+      // Reset timer on new submission
+      setCountdownTime(timer);
     } catch (error) {
       setIsLoading(false);
       console.error('API error: ', error);
