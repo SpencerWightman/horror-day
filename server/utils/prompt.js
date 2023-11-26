@@ -1,4 +1,4 @@
-const templates = require("./templates.js");
+import templates from "./templates.js";
 
 const generatePrompt = (inputText) => {
   const append = ' The journal entry: ';
@@ -14,4 +14,4 @@ const generatePrompt = (inputText) => {
   return templates['default'] + append + inputText;
 };
 
-module.exports = generatePrompt;
+export default generatePrompt;

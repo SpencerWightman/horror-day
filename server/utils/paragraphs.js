@@ -25,5 +25,4 @@ const addParagraphBreaks = (text) => {
   return formattedText;
 }
 
-module.exports = addParagraphBreaks;
-
+export default addParagraphBreaks;
