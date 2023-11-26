@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import formatTime from "../utils/format-time.js";
 
-const timer = 15 // 86400 for 24hrs
+const timer = 10 // 86400 for 24hrs
 
 const Journal = () => {
   const [inputText, setInputText] = useState('');
@@ -15,6 +15,19 @@ const Journal = () => {
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
+
+  useEffect(() => {
+    // Retrieve LLMText from localStorage
+    const storedLLMText = localStorage.getItem('LLMText');
+    if (storedLLMText) {
+      setLLMText(storedLLMText);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Store LLMText in localStorage
+    localStorage.setItem('LLMText', LLMText);
+  }, [LLMText]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -34,6 +47,7 @@ const Journal = () => {
   useEffect(() => {
     localStorage.setItem('endTime', endTime.toString());
   }, [endTime]);
+  
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -44,10 +58,6 @@ const Journal = () => {
       } else if (countdownTime !== 0) {
         setCountdownTime(0);
         setLLMText('');
-        // Only reset inputText if it hasn't been changed since the timer ended
-        if (inputText === LLMText) {
-          setInputText('');
-        }
         localStorage.removeItem('LLMText');
         localStorage.removeItem('endTime');
       }
@@ -70,8 +80,10 @@ const Journal = () => {
           inputText
         }
       });
+      localStorage.setItem('LLMText', response.data);
       setLLMText(response.data);
       setIsLoading(false);
+      setInputText('');
       setEndTime(Date.now() + timer * 1000);
     } catch (error) {
       setIsLoading(false);
