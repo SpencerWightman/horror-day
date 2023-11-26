@@ -1,9 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
-import OpenAI from "openai";
-import templates from "../utils/templates.js"
-import addParagraphBreaks from "../utils/paragraphs.js"
-import formatTime from "../utils/format-time.js"
+import formatTime from "../utils/format-time.js";
 
 const Journal = () => {
   const [inputText, setInputText] = useState('');
@@ -35,43 +33,22 @@ const Journal = () => {
     }
   }, [countdownTime, isLoading, LLMText]);
 
-  const generatePrompt = (inputText) => {
-    const append = ' The journal entry: ';
-    const prepend = ' The story should include ';
-    // Check for keywords in inputText
-    for (let keyword in templates) {
-      if (inputText.toLowerCase().includes(keyword)) {
-        return templates['default'] + prepend + templates['keyword'] + append + inputText;
-      }
-    }
-
-    // If no keywords found
-    return templates['default'] + append + inputText;
-  };
-
   const handleSubmit = async () => {
     setIsLoading(true);
-    const prompt = generatePrompt(inputText);
-    const openai = new OpenAI({
-      apiKey: import.meta.env.VITE_OPENAI,
-      dangerouslyAllowBrowser: true
-    });
     try {
-      const response = await openai.chat.completions.create({
-        messages: [
-          {"role": "system", "content": prompt},
-          {"role": "user", "content": inputText}
-        ],
-        model: "gpt-4-1106-preview",
+      const response = await axios({
+        method: 'post',
+        url: '/horrify',
+        data: {
+          inputText,
+          pass,
+        }
       });
-  
-      const data = response.choices[0].message.content
-      const formattedText = addParagraphBreaks(data);
-      setLLMText(formattedText);
+      setLLMText(response);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.error('OpenAI API error: ', error);
+      console.error('API error: ', error);
     }
   };
 

@@ -25,4 +25,4 @@ based on the journal entry. The main character in your story is the author of th
 Your story must use 3rd person and past tense. `
 };
 
-export default templates;
+module.exports = templates;

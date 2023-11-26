@@ -19,7 +19,7 @@ const ProtectedRoute = ({ token, children }) => {
 
   if (!token) {
     // Redirect to /login; save the current location the user was trying to access
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return children;
@@ -31,7 +31,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login setToken={setToken} />} />
+        <Route path="/" element={<Login setToken={setToken} />} />
         <Route 
           path="/journal" 
           element={
