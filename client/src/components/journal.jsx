@@ -10,57 +10,55 @@ const Journal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
   const [countdownTime, setCountdownTime] = useState(timer);
+  const [endTime, setEndTime] = useState(Date.now() + timer * 1000);
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
 
-  // Adjust the height of the textarea to fit the content
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = 'auto'; // Reset height to recalculate
-      textarea.style.height = `${textarea.scrollHeight}px`; // Set new height
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
     }
   }, [inputText]);
 
   useEffect(() => {
-    const storedText = localStorage.getItem('LLMText');
-    const storedTime = localStorage.getItem('countdownTime');
-    if (storedText) {
-      setLLMText(storedText);
-    }
-    if (storedTime) {
-      setCountdownTime(parseInt(storedTime, 10));
+    const storedEndTime = localStorage.getItem('endTime');
+    if (storedEndTime) {
+      setEndTime(parseInt(storedEndTime, 10));
     }
   }, []);
 
   useEffect(() => {
-    // Store LLMText and countdownTime in localStorage
-    localStorage.setItem('LLMText', LLMText);
-    localStorage.setItem('countdownTime', countdownTime.toString());
-
-    // Clear the stored values when timer hits 0
-    if (countdownTime === 0) {
-      localStorage.removeItem('LLMText');
-      localStorage.removeItem('countdownTime');
-    }
-  }, [LLMText, countdownTime]);
+    localStorage.setItem('endTime', endTime.toString());
+  }, [endTime]);
 
   useEffect(() => {
-    if (countdownTime > 0 && !isLoading && LLMText) {
-      const timerId = setTimeout(() => {
-        setCountdownTime(countdownTime - 1);
-      }, 1000);
-  
-      return () => clearTimeout(timerId);
-    } else if (countdownTime === 0) {
-      setLLMText(''); // Reset LLMText when timer hits zero
-      setInputText('');
-      localStorage.removeItem('LLMText');
-      localStorage.removeItem('countdownTime');
-    }
-  }, [countdownTime, isLoading, LLMText]);
+    const updateCountdown = () => {
+      const now = Date.now();
+      const remainingTime = endTime - now;
+      if (remainingTime > 0) {
+        setCountdownTime(Math.ceil(remainingTime / 1000));
+      } else if (countdownTime !== 0) {
+        setCountdownTime(0);
+        setLLMText('');
+        // Only reset inputText if it hasn't been changed since the timer ended
+        if (inputText === LLMText) {
+          setInputText('');
+        }
+        localStorage.removeItem('LLMText');
+        localStorage.removeItem('endTime');
+      }
+    };
+
+    const timerId = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    return () => clearInterval(timerId);
+  }, [endTime, countdownTime, inputText, LLMText]);
+
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -74,9 +72,7 @@ const Journal = () => {
       });
       setLLMText(response.data);
       setIsLoading(false);
-
-      // Reset timer on new submission
-      setCountdownTime(timer);
+      setEndTime(Date.now() + timer * 1000);
     } catch (error) {
       setIsLoading(false);
       console.error('API error: ', error);
@@ -91,7 +87,6 @@ const Journal = () => {
           </div>
         ) : !LLMText ? (
           <>
-            {/* User input content */}
             <textarea
               autoFocus
               ref={textareaRef}
@@ -112,21 +107,21 @@ const Journal = () => {
           </>
         ) : (
           <>
-          <div className="countdown-timer">
-            {formatTime(countdownTime)}
-          </div>
-          <div className="mt-10 mb-10 sm:max-w-2xl lg:max-w-2xl text-black py-2.5 px-4 rounded transition duration-200">
-            {LLMText.split('\n\n').map((paragraph, index, array) => (
-              <React.Fragment key={index}>
-                <p className="justified-text">{paragraph}</p>
-                {index < array.length - 1 && <br />}
-              </React.Fragment>
-            ))}
-          </div>
+            <div className="countdown-timer">
+              {formatTime(countdownTime)}
+            </div>
+            <div className="mt-10 mb-10 sm:max-w-2xl lg:max-w-2xl text-black py-2.5 px-4 rounded transition duration-200">
+              {LLMText.split('\n\n').map((paragraph, index, array) => (
+                <React.Fragment key={index}>
+                  <p className="justified-text">{paragraph}</p>
+                  {index < array.length - 1 && <br />}
+                </React.Fragment>
+              ))}
+            </div>
           </>
         )}
     </div>
-  );    
+  );
 };
 
 export default Journal;
