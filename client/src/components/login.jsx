@@ -11,7 +11,7 @@ const theme = createTheme({
   },
 });
 
-const Login = ({ setToken }) => {
+const Login = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,17 +29,28 @@ const Login = ({ setToken }) => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (validatePassword()) {
-      if (import.meta.env.VITE_PASS === password) {
-        console.log('Password matched');
-        setToken(true);
-        navigate('/journal');
-      } else {
-        console.log('Password did not match');
-        setError('Incorrect password');
+      try {
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password: password }),
+        });
+  
+        if (response.ok) {
+          console.log('Password matched');
+          navigate('/journal');
+        } else {
+          console.log('Password did not match');
+          setError('Incorrect password');
+        }
+      } catch (error) {
+        console.error('An error occurred', error);
       }
     } else {
       console.log('Form has validation errors');

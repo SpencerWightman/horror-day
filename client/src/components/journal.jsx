@@ -40,8 +40,7 @@ const Journal = () => {
         method: 'post',
         url: '/horrify',
         data: {
-          inputText,
-          pass,
+          inputText
         }
       });
       setLLMText(response);
