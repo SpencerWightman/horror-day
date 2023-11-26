@@ -1,4 +1,3 @@
-import addParagraphBreaks from "./utils/paragraphs.js";
 import generatePrompt from "./utils/prompt.js";
 import OpenAI from 'openai';
 import bcrypt from 'bcrypt';
@@ -77,8 +76,7 @@ async function main() {
         });
 
         const data = response.choices[0].message.content;
-        const formattedText = addParagraphBreaks(data);
-        res.send(formattedText);
+        res.send(data);
       } catch (error) {
         console.error('OpenAI API error: ', error);
         res.send(error);

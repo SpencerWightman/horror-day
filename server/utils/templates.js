@@ -22,7 +22,7 @@ const templates = {
   "default": `You are a short story horror writer. All your stories are 300-400 words long.
 The following message is a journal entry. Write a disturbing, creepy horror short story 
 based on the journal entry. The main character in your story is the author of the journal entry. 
-Your story must use 3rd person and past tense. `
+Your story must use 3rd person and past tense. Split your story into paragraphs with a blank line between each paragraph. `
 };
 
 export default templates;
