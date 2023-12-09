@@ -59,6 +59,37 @@ async function main() {
     }
   });
 
+  // fetch single entry
+  app.get('/api/entry', (req, res) => {
+    if (req.session.authenticated) {
+      // pull user_id and story_id from body
+      req.body
+      // db/dynamo.js async call
+      // return single entry
+    }
+  });
+
+  // fetch story_ids list
+  app.get('/api/entry', (req, res) => {
+    if (req.session.authenticated) {
+      // pull user_id and story_id from body
+      req.body
+      // db/dynamo.js async call
+      // return story_id timestamps
+    }
+  });
+
+  // save story
+  app.post('/api/entry', (req, res) => {
+    if (req.session.authenticated) {
+      // pull user_id and story from body
+      // generate story_id timestamp
+      req.body
+      // db/dynamo.js async call
+      // return confirmation
+    }
+  });
+
   app.post('/horrify', async (req, res) => {
     if (req.session.authenticated) {
       const inputText = req.body.inputText;

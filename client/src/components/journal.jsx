@@ -105,7 +105,7 @@ const Journal = () => {
               value={inputText}
               onChange={handleInputChange}
               maxLength={500}
-              className="mt-20 sm:max-w-2xl lg:max-w-4xl p-2 border border-gray-300 rounded-md focus:outline-none"
+              className="mt-20 sm:max-w-2xl lg:max-w-4xl p-2 border border-gray-300 rounded-md bg-black focus:outline-none"
               placeholder="Your journal entry..."
               style={{ overflowY: 'hidden', resize: 'none' }}
             />
