@@ -16,13 +16,13 @@ const UserTableName = 'horrify-users';
 const saltRounds = 5;
 
 // store new user
-export const storeUser = async (username, password) => {
+export const storeUser = async (user_id, password) => {
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   const dynamoPut = new PutCommand({
     TableName: UserTableName,
     Item: {
-      username,
+      user_id,
       hashedPassword
     },
   });
@@ -37,14 +37,55 @@ export const storeUser = async (username, password) => {
 };
 
 // validate login
-export const validateLogin = async (username, pass) => {
+export const validateLogin = async (user_id, pass) => {
+  const dynamoQuery = new QueryCommand({
+    TableName: UserTableName,
+    KeyConditionExpression: 'user_id = :user_id',
+    ExpressionAttributeValues: {
+      ':user_id': user_id
+    }
+  });
 
-}
+  try {
+    const response = await dynamoDocClient.send(dynamoQuery);
+    if (response.Items && response.Items.length > 0) {
+      const user = response.Items[0];
+      const isPasswordValid = await bcrypt.compare(pass, user.hashedPassword);
+      return isPasswordValid; // not object
+    }
+    return { status: 'error', message: 'no user found' };
+  } catch (error) {
+    console.error('Error querying DynamoDB: ', error);
+    return { status: 'error', message: error.message };
+  }
+};
 
-// check username taken
-export const validateSignup = async (username, pass) => {
+// validate signup
+export const validateSignup = async (user_id, pass) => {
+  if (pass.length < 8) {
+    return { status: 'error', message: 'password under 8' };
+  }
 
-}
+  const dynamoQuery = new QueryCommand({
+    TableName: UserTableName,
+    KeyConditionExpression: 'user_id = :user_id',
+    ExpressionAttributeValues: {
+      ':user_id': user_id
+    }
+  });
+
+  try {
+    const response = await dynamoDocClient.send(dynamoQuery);
+    if (response.Items && response.Items.length > 0) {
+      // user_id already exists
+      return { status: 'error', message: 'user exists' };
+    }
+    return { status: 'success' };
+  } catch (error) {
+    console.error('Error querying DynamoDB: ', error);
+    return { status: 'error', message: error.message };
+  }
+};
 
 // story_id is creation timestamp
 export const storeEntry = async (user_id, story_id, story) => {

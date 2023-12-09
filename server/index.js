@@ -7,6 +7,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import {
+  storeUser,
+  validateLogin,
+  validateSignup,
+  fetchEntriesTimestamps,
+  fetchSingleEntry,
+} from "./db/dynamo.js";
 
 const app = express();
 dotenv.config();
@@ -40,10 +47,11 @@ async function main() {
   app.use(express.json());
   app.use(session({ secret: 'bigsecretboom!', resave: false, saveUninitialized: true }));
 
+  //
   app.post('/', async (req, res) => {
-    const userPassword = req.body.password;
-    const passHash = '$2b$05$ATBklt72HeUdB8DzW8J0HO7uuEQNipd7yR1Ji0klK.52iNTyu1axu';
-  
+    const username = req.body.username;
+    const pass = req.body.pass;
+
     try {
       if (await bcrypt.compare(userPassword, passHash)) {
         req.session.authenticated = true;
@@ -71,7 +79,7 @@ async function main() {
   });
 
   // fetch single entry
-  app.get('/api/entry', (req, res) => {
+  app.get('/entry', (req, res) => {
     if (req.session.authenticated) {
       // pull user_id and story_id from body
       req.body
@@ -81,7 +89,7 @@ async function main() {
   });
 
   // fetch story_ids list
-  app.get('/api/entries', (req, res) => {
+  app.get('/entries', (req, res) => {
     if (req.session.authenticated) {
       // pull user_id and story_id from body
       req.body
@@ -91,7 +99,7 @@ async function main() {
   });
 
   // save story
-  app.post('/api/entry', (req, res) => {
+  app.post('/entry', (req, res) => {
     if (req.session.authenticated) {
       // pull user_id and story from body
       // generate story_id timestamp
@@ -101,15 +109,12 @@ async function main() {
     }
   });
 
-  // check if valid signup
-  app.post('/api/entry', (req, res) => {
-    if (req.session.authenticated) {
-      // pull user_id and story from body
-      // generate story_id timestamp
-      req.body
-      // db/dynamo.js async call
-      // return confirmation
-    }
+  // handle signup attempt
+  app.post('/signup', (req, res) => {
+    // db/dynamo.js async call
+    // check if username taken
+    // check if password good enough
+    // if so, save in DB
   });
 
   app.post('/horrify', async (req, res) => {
