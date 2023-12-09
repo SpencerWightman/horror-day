@@ -6,39 +6,70 @@ import {
   PutCommand,
   DynamoDBDocumentClient
 } from "@aws-sdk/lib-dynamodb";
+import bcrypt from 'bcrypt';
 
 // credentials fetched automatically by SDK lookup chain
 const dynamoClient = new DynamoDBClient({}); 
 const dynamoDocClient = DynamoDBDocumentClient.from(dynamoClient);
-const TableName = 'horrify';
+const StoryTableName = 'horrify';
+const UserTableName = 'horrify-users';
+const saltRounds = 5;
+
+// store new user
+export const storeUser = async (username, password) => {
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+  const dynamoPut = new PutCommand({
+    TableName: UserTableName,
+    Item: {
+      username,
+      hashedPassword
+    },
+  });
+
+  try {
+    await dynamoDocClient.send(dynamoPut);
+    return { status: 'success' };
+  } catch (error) {
+    console.error('Error pushing to DynamoDB: ', error);
+    return { status: 'error', message: error.message };
+  }
+};
+
+// validate login
+export const validateLogin = async (username, pass) => {
+
+}
+
+// check username taken
+export const validateSignup = async (username, pass) => {
+
+}
 
 // story_id is creation timestamp
 export const storeEntry = async (user_id, story_id, story) => {
   const dynamoPut = new PutCommand({
-    TableName,
+    TableName: StoryTableName,
     Item: {
       user_id,
       story_id,
       story
     },
   });
-
-  let response;
   
   try {
-    response = await dynamoDocClient.send(dynamoPut);
+    await dynamoDocClient.send(dynamoPut);
+    return { status: 'success' };
   } catch (error) {
-    console.log('Error pushing to DynamoDB: ', error);
-    response = 404;
+    console.error('Error pushing to DynamoDB: ', error);
+    return { status: 'error', message: error.message };
   }
-
-  return response;
 }
 
 // story_id is creation timestamp
 export const fetchSingleEntry = async (user_id, story_id) => {
   const dynamoQuery = new QueryCommand({
-    TableName,
+    TableName: StoryTableName,
     KeyConditionExpression: 'user_id = :user_id and story_id = :story_id',
     ExpressionAttributeValues: {
       ':user_id': user_id,
@@ -46,22 +77,19 @@ export const fetchSingleEntry = async (user_id, story_id) => {
     }
   });
 
-  let response;
-
   try {
-    response = await dynamoClient.send(dynamoQuery);
+    await dynamoClient.send(dynamoQuery);
+    return { status: 'success' };
   } catch (error) {
-    console.log('Error querying DynamoDB:', error);
-    response = 404;
+    console.error('Error fetching from DynamoDB: ', error);
+    return { status: 'error', message: error.message };
   }
-
-  return response;
 }
 
 // story_id is creation timestamp
 export const fetchEntriesTimestamps = async (user_id) => {
   const dynamoQuery = new QueryCommand({
-    TableName,
+    TableName: StoryTableName,
     KeyConditionExpression: 'user_id = :user_id',
     ExpressionAttributeValues: {
       ':user_id': user_id
@@ -77,8 +105,8 @@ export const fetchEntriesTimestamps = async (user_id) => {
       storyIds = response.Items.map(item => item.story_id);
     }
   } catch (error) {
-    console.log('Error querying DynamoDB:', error);
-    return 404;
+    console.error('Error querying DynamoDB:', error);
+    return { status: 'error', message: error.message };
   }
 
   return storyIds;

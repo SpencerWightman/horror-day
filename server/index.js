@@ -4,9 +4,20 @@ import bcrypt from 'bcrypt';
 import express from "express";
 import session from 'express-session';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import { v4 as uuidv4 } from 'uuid';
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 
 const app = express();
+dotenv.config();
+
+const sessionSecret = process.env.SESSION_SECRET || uuidv4();
+
+app.use(session({
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: true
+}));
 
 async function getSecret() {
   const secretArn = 'arn:aws:secretsmanager:us-east-1:099208431742:secret:OPENAI-LeWLvq';
@@ -70,7 +81,7 @@ async function main() {
   });
 
   // fetch story_ids list
-  app.get('/api/entry', (req, res) => {
+  app.get('/api/entries', (req, res) => {
     if (req.session.authenticated) {
       // pull user_id and story_id from body
       req.body
@@ -80,6 +91,17 @@ async function main() {
   });
 
   // save story
+  app.post('/api/entry', (req, res) => {
+    if (req.session.authenticated) {
+      // pull user_id and story from body
+      // generate story_id timestamp
+      req.body
+      // db/dynamo.js async call
+      // return confirmation
+    }
+  });
+
+  // check if valid signup
   app.post('/api/entry', (req, res) => {
     if (req.session.authenticated) {
       // pull user_id and story from body
