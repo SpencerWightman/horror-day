@@ -5,10 +5,12 @@ import express from "express";
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import {
   storeUser,
+  storeEntry,
   validateLogin,
   validateSignup,
   fetchEntriesTimestamps,
@@ -26,6 +28,9 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use(cors());
+app.use(express.json());
+
 async function getSecret() {
   const secretArn = 'arn:aws:secretsmanager:us-east-1:099208431742:secret:OPENAI-LeWLvq';
   const client = new SecretsManagerClient({ region: "us-east-1" });
@@ -41,24 +46,28 @@ async function getSecret() {
 async function main() {
   const openAIKey = await getSecret();
 
-  app.use(express.static('dist'));
-  app.use('/journal', express.static('dist'));
-  app.use(cors());
-  app.use(express.json());
-  app.use(session({ secret: 'bigsecretboom!', resave: false, saveUninitialized: true }));
+  // app.use(express.static('dist'));
+  // app.use('/journal', express.static('dist'));
 
-  //
+  // login or signup
+  // db/dynamo.js async call
+  // check if username taken
+  // check if password good enough
+  // if so, save in DB
   app.post('/', async (req, res) => {
     const username = req.body.username;
-    const pass = req.body.pass;
+    const password = req.body.password;
 
     try {
-      if (await bcrypt.compare(userPassword, passHash)) {
+      if (await validateLogin(username, password)) {
+        req.session.authenticated = true;
+        res.status(200).send('Logged in');
+      } else if (await validateSignup(username, password)) {
         req.session.authenticated = true;
         res.status(200).send('Logged in');
       } else {
         console.log('invalid')
-        res.status(401).send('Invalid credentials');
+        res.status(401).send('Invalid signup or login');
       }
     } catch (error) {
       console.error(error);
@@ -79,12 +88,14 @@ async function main() {
   });
 
   // fetch single entry
-  app.get('/entry', (req, res) => {
+  app.get('/entry/:id', (req, res) => {
     if (req.session.authenticated) {
-      // pull user_id and story_id from body
-      req.body
+      const username = req.body.username;
+      const story_id = req.params.id;
       // db/dynamo.js async call
       // return single entry
+    } else {
+      res.status(401).send('Unauthorized');
     }
   });
 
@@ -95,26 +106,27 @@ async function main() {
       req.body
       // db/dynamo.js async call
       // return story_id timestamps
+    } else {
+      res.status(401).send('Unauthorized');
     }
   });
 
   // save story
-  app.post('/entry', (req, res) => {
+  app.post('/entry', async (req, res) => {
     if (req.session.authenticated) {
-      // pull user_id and story from body
-      // generate story_id timestamp
-      req.body
-      // db/dynamo.js async call
-      // return confirmation
+      const timestamp = Date.now();
+      const username = req.body.username
+      const llm_story = req.body.LLMText
+      try {
+        await storeEntry(username, timestamp, llm_story);
+        res.status(201).send('Story saved');
+      } catch (error) {
+        console.error('Saving to DB error: ', error);
+        res.send(error);
+      }
+    } else {
+      res.status(401).send('Unauthorized');
     }
-  });
-
-  // handle signup attempt
-  app.post('/signup', (req, res) => {
-    // db/dynamo.js async call
-    // check if username taken
-    // check if password good enough
-    // if so, save in DB
   });
 
   app.post('/horrify', async (req, res) => {
@@ -146,6 +158,14 @@ async function main() {
 
   app.get('/health', (req, res) => {
     res.sendStatus(200);
+  });
+
+  // Serve static files from 'dist' directory
+  app.use(express.static('dist'));
+
+  // All other GET requests not handled before will return the React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
   });
 
   app.listen(3000, () => console.log('Server started on port 3000'));

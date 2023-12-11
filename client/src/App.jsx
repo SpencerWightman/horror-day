@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import Login from "./components/login";
 import Journal from "./components/journal";
+import SingleEntry from "./components/single-entry";
+import Entries from "./components/entries";
+
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -30,7 +33,7 @@ const useAuth = () => {
   return { isAuthenticated, loading };
 };
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ child }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
@@ -42,19 +45,37 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  return children;
+  return child;
 };
 
 const App = () => {
+  const [username, setUsername] = useState("");
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Login username={username} setUsername={setUsername} />} />
         <Route 
           path="/journal" 
           element={
             <ProtectedRoute>
-              <Journal />
+              <Journal username={username}/>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/entry/:id" 
+          element={
+            <ProtectedRoute>
+              <SingleEntry username={username}/>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/entries" 
+          element={
+            <ProtectedRoute>
+              <Entries username={username}/>
             </ProtectedRoute>
           } 
         />

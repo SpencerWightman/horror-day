@@ -4,9 +4,10 @@ import formatTime from "../utils/format-time.js";
 
 const timer = 10 // 86400 for 24hrs
 
-const Journal = () => {
+const Journal = ({ username }) => {
   const [inputText, setInputText] = useState('');
   const [LLMText, setLLMText] = useState('');
+  const [textSaved, setTextSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
   const [countdownTime, setCountdownTime] = useState(timer);
@@ -23,6 +24,14 @@ const Journal = () => {
       setLLMText(storedLLMText);
     }
   }, []);
+
+  useEffect(() => {
+    let timeoutId;
+    if (textSaved) {
+      timeoutId = setTimeout(() => setTextSaved(false), 2000); // resets to false after 2 seconds
+    }
+    return () => clearTimeout(timeoutId);
+  }, [textSaved]);
 
   useEffect(() => {
     // Store LLMText in localStorage
@@ -91,6 +100,26 @@ const Journal = () => {
     }
   };
 
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await axios({
+        method: 'post',
+        url: '/entry',
+        data: {
+          username,
+          LLMText
+        }
+      });
+
+      setTextSaved(true);
+    } catch (error) {
+      setIsLoading(false);
+      console.error('API error: ', error);
+    }
+    setIsLoading(false);
+  };
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4">
         {isLoading ? (
@@ -129,6 +158,12 @@ const Journal = () => {
                   {index < array.length - 1 && <br />}
                 </React.Fragment>
               ))}
+              <button
+                onClick={handleSave}
+                className="mt-2 mb-10 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
+              >
+                {textSaved ? 'STORY SAVED' : 'SAVE YOUR STORY'}
+              </button>
             </div>
           </>
         )}

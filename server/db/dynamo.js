@@ -51,12 +51,12 @@ export const validateLogin = async (user_id, pass) => {
     if (response.Items && response.Items.length > 0) {
       const user = response.Items[0];
       const isPasswordValid = await bcrypt.compare(pass, user.hashedPassword);
-      return isPasswordValid; // not object
+      return isPasswordValid;
     }
-    return { status: 'error', message: 'no user found' };
+    return false;
   } catch (error) {
     console.error('Error querying DynamoDB: ', error);
-    return { status: 'error', message: error.message };
+    return false;
   }
 };
 
@@ -78,12 +78,12 @@ export const validateSignup = async (user_id, pass) => {
     const response = await dynamoDocClient.send(dynamoQuery);
     if (response.Items && response.Items.length > 0) {
       // user_id already exists
-      return { status: 'error', message: 'user exists' };
+      return false;
     }
-    return { status: 'success' };
+    return true;
   } catch (error) {
     console.error('Error querying DynamoDB: ', error);
-    return { status: 'error', message: error.message };
+    return false;
   }
 };
 

@@ -11,17 +11,13 @@ const theme = createTheme({
   },
 });
 
-const Login = ({ username, setUsername }) => {
+const Login = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handlePasswordChange = (e) => {
+  const handleInputChange = (e) => {
     setPassword(e.target.value);
-  };
-
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
   };
 
   const validatePassword = () => {
@@ -33,33 +29,24 @@ const Login = ({ username, setUsername }) => {
     return true;
   };
 
-  const validateUsername = () => {
-    if (username.trim().length <= 3) {
-      setError('Username must be greater than three characters');
-      return false;
-    } 
-    setError('');
-    return true;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    if (validatePassword() && validateUsername()) {
+    if (validatePassword()) {
       try {
         const response = await fetch('/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username: username, password: password }),
+          body: JSON.stringify({ password: password }),
         });
-
+  
         if (response.ok) {
-          console.log('Login or signup successful');
+          console.log('Password matched');
           navigate('/journal');
         } else {
-          console.log('Login or signup unsuccessful');
+          console.log('Password did not match');
           setError('Incorrect password');
         }
       } catch (error) {
@@ -83,23 +70,6 @@ const Login = ({ username, setUsername }) => {
       p={2}
     >
       <form onSubmit={handleSubmit} style={{ maxWidth: '400px', width: '100%' }}>
-      <p className="block text-stone-500 font-extrabold py-2.5 px-4 rounded hover:cursor-default">login or signup</p>
-      <Box mb={1}>
-          <TextField
-            autoFocus
-            type="username"
-            label="Username"
-            name="username"
-            value={username}
-            onChange={handleUsernameChange}
-            helperText={error}
-            error={!!error}
-            fullWidth
-            margin="normal"
-            color="primary" // Use the primary color from the theme
-          />
-        </Box>
-
         <Box mb={1}>
           <TextField
             autoFocus
@@ -107,7 +77,7 @@ const Login = ({ username, setUsername }) => {
             label="Password"
             name="password"
             value={password}
-            onChange={handlePasswordChange}
+            onChange={handleInputChange}
             helperText={error}
             error={!!error}
             fullWidth
