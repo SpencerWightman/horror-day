@@ -1,113 +1,42 @@
-import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const theme = createTheme({
-  palette: {
-    primary: { main: '#991b1b' },
-  },
-});
+const Entries = ({ username }) => {
+  const [entries, setEntries] = useState([]);
+  const navigate = useNavigate(); 
 
-const Login = () => {
-  const navigate = useNavigate();
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleInputChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const validatePassword = () => {
-    if (password.trim() === '') {
-      setError('Password is required');
-      return false;
-    } 
-    setError('');
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    if (validatePassword()) {
+  useEffect(() => {
+    const fetchEntries = async () => {
       try {
-        const response = await fetch('/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ password: password }),
-        });
-  
-        if (response.ok) {
-          console.log('Password matched');
-          navigate('/journal');
-        } else {
-          console.log('Password did not match');
-          setError('Incorrect password');
-        }
+        const response = await axios.get('/entries', { params: { username } });
+        setEntries(response.data);
       } catch (error) {
-        console.error('An error occurred', error);
+        console.error('DB error: ', error);
       }
-    } else {
-      console.log('Form has validation errors');
-    }
+    };
+    fetchEntries();
+  }, [username]);
+
+  const handleClick = (timestamp) => {
+    navigate(`/entry/${timestamp}`);
   };
 
   return (
-    <>
-    <p className="block text-stone-500 font-extrabold py-2.5 px-4 rounded hover:cursor-default">HORRIFY YOUR DAY</p>
-    <ThemeProvider theme={theme}>
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="70vh"
-      p={2}
-    >
-      <form onSubmit={handleSubmit} style={{ maxWidth: '400px', width: '100%' }}>
-        <Box mb={1}>
-          <TextField
-            autoFocus
-            type="password"
-            label="Password"
-            name="password"
-            value={password}
-            onChange={handleInputChange}
-            helperText={error}
-            error={!!error}
-            fullWidth
-            margin="normal"
-            color="primary" // Use the primary color from the theme
-          />
-        </Box>
-
-        <Button
-          type="submit"
-          variant="contained"
-          style={{
-            marginTop: '8px', // equivalent to mt-2 in Tailwind
-            backgroundColor: 'black',
-            color: '#b4b4b4', // equivalent to text-stone-300 in Tailwind
-            fontWeight: 'bold', // equivalent to font-extrabold in Tailwind
-            padding: '10px 16px', // equivalent to py-2.5 px-4 in Tailwind
-            borderRadius: '4px', // equivalent to rounded in Tailwind
-            transition: 'background-color 200ms', // equivalent to transition duration-200 in Tailwind
-          }}
-          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#991b1b'} // hover:bg-red-800 in Tailwind
-          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'black'}
-        >
-          Submit
-        </Button>
-      </form>
-    </Box>
-    </ThemeProvider>
-    </>
+    <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4">
+      <div className="mt-10 mb-10 sm:max-w-2xl lg:max-w-2xl text-black py-2.5 px-4 rounded transition duration-200">
+        {entries.map((entry, index) => (
+          <div
+            key={index}
+            className="timestamp-entry hover:bg-blue-500 hover:text-white cursor-pointer"
+            onClick={() => handleClick(entry)}
+          >
+            {entry}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default Login;
+export default Entries;

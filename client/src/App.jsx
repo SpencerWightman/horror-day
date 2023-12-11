@@ -56,7 +56,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login username={username} setUsername={setUsername} />} />
         <Route 
-          path="/journal" 
+          path="/journal"
           element={
             <ProtectedRoute>
               <Journal username={username}/>
@@ -64,7 +64,7 @@ const App = () => {
           } 
         />
         <Route 
-          path="/entry/:id" 
+          path="/entry/:id"
           element={
             <ProtectedRoute>
               <SingleEntry username={username}/>
@@ -72,7 +72,7 @@ const App = () => {
           } 
         />
         <Route 
-          path="/entries" 
+          path="/entries"
           element={
             <ProtectedRoute>
               <Entries username={username}/>

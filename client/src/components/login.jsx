@@ -37,7 +37,7 @@ const Login = ({ username, setUsername }) => {
     if (username.trim().length <= 3) {
       setError('Username must be greater than three characters');
       return false;
-    } 
+    }
     setError('');
     return true;
   };
