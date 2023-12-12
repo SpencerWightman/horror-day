@@ -97,6 +97,9 @@ const Login = ({ username, setUsername }) => {
             fullWidth
             margin="normal"
             color="primary" // Use the primary color from the theme
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
         </Box>
 
@@ -113,6 +116,9 @@ const Login = ({ username, setUsername }) => {
             fullWidth
             margin="normal"
             color="primary" // Use the primary color from the theme
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
         </Box>
 

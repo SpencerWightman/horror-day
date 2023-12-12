@@ -6,13 +6,13 @@ import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import {
   storeUser,
   storeEntry,
   validateLogin,
-  validateSignup,
   fetchEntriesTimestamps,
   fetchSingleEntry,
 } from "./db/dynamo.js";
@@ -62,9 +62,9 @@ async function main() {
       if (await validateLogin(username, password)) {
         req.session.authenticated = true;
         res.status(200).send('Logged in');
-      } else if (await validateSignup(username, password)) {
+      } else if (await storeUser(username, password)) {
         req.session.authenticated = true;
-        res.status(200).send('Logged in');
+        res.status(200).send('Signed up and logged in');
       } else {
         console.log('invalid')
         res.status(401).send('Invalid signup or login');
@@ -162,6 +162,9 @@ async function main() {
 
   // Serve static files from 'dist' directory
   app.use(express.static('dist'));
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
 
   // All other GET requests not handled before will return the React app
   app.get('*', (req, res) => {

@@ -20,7 +20,7 @@ const SingleEntry = ({ username, storyId }) => {
       }
     }
     fetchEntry();
-  }, []);
+  }, [username]);
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-#b4b4b4">

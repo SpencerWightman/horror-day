@@ -42,7 +42,7 @@ export const validateLogin = async (user_id, pass) => {
     TableName: UserTableName,
     KeyConditionExpression: 'user_id = :user_id',
     ExpressionAttributeValues: {
-      ':user_id': user_id
+      ':user_id': { 'S': user_id }
     }
   });
 
@@ -50,39 +50,12 @@ export const validateLogin = async (user_id, pass) => {
     const response = await dynamoDocClient.send(dynamoQuery);
     if (response.Items && response.Items.length > 0) {
       const user = response.Items[0];
-      const isPasswordValid = await bcrypt.compare(pass, user.hashedPassword);
+      const isPasswordValid = bcrypt.compare(pass, user.hashedPassword.S);
       return isPasswordValid;
     }
     return false;
   } catch (error) {
-    console.error('Error querying DynamoDB: ', error);
-    return false;
-  }
-};
-
-// validate signup
-export const validateSignup = async (user_id, pass) => {
-  if (pass.length < 8) {
-    return { status: 'error', message: 'password under 8' };
-  }
-
-  const dynamoQuery = new QueryCommand({
-    TableName: UserTableName,
-    KeyConditionExpression: 'user_id = :user_id',
-    ExpressionAttributeValues: {
-      ':user_id': user_id
-    }
-  });
-
-  try {
-    const response = await dynamoDocClient.send(dynamoQuery);
-    if (response.Items && response.Items.length > 0) {
-      // user_id already exists
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.error('Error querying DynamoDB: ', error);
+    console.error('Error validating login DynamoDB: ', error);
     return false;
   }
 };
