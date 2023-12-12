@@ -5,8 +5,6 @@ import express from "express";
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import {
@@ -48,12 +46,9 @@ async function main() {
 
   app.use(express.static('dist'));
   app.use('/journal', express.static('dist'));
+  app.use('/entries', express.static('dist'));
+  app.use('/entry/:id', express.static('dist'));
 
-  // login or signup
-  // db/dynamo.js async call
-  // check if username taken
-  // check if password good enough
-  // if so, save in DB
   app.post('/', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -71,12 +66,8 @@ async function main() {
       }
     } catch (error) {
       console.error(error);
-      res.status(500).send('An error occurred');
+      res.status(500).send('An error with login/signup occurred');
     }
-  });
-
-  app.get('/journal', async (req, res) => {
-    res.status(200).send('Access granted');
   });
 
   app.get('/api/auth', (req, res) => {
@@ -88,24 +79,33 @@ async function main() {
   });
 
   // fetch single entry
-  app.get('/entry/:id', (req, res) => {
+  app.get('/api/entry', async (req, res) => {
     if (req.session.authenticated) {
-      const username = req.body.username;
-      const story_id = req.params.id;
-      // db/dynamo.js async call
-      // return single entry
+      const username = req.query.username;
+      const timestamp = req.query.id;
+      try {
+        const entry = await fetchSingleEntry(username, timestamp)
+        res.send(entry);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('An error fetching the entry occurred');
+      }
     } else {
       res.status(401).send('Unauthorized');
     }
   });
 
   // fetch story_ids list
-  app.get('/entries', (req, res) => {
+  app.get('/api/entries', async (req, res) => {
     if (req.session.authenticated) {
-      // pull user_id and story_id from body
-      req.body
-      // db/dynamo.js async call
-      // return story_id timestamps
+      const username = req.query.username;
+      try {
+        const entries = await fetchEntriesTimestamps(username)
+        res.send(entries);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('An error fetching the entries occurred');
+      }
     } else {
       res.status(401).send('Unauthorized');
     }

@@ -4,7 +4,7 @@ import formatTime from "../utils/format-time.js";
 
 const timer = 10 // 86400 for 24hrs
 
-const Journal = ({ username }) => {
+const Journal = () => {
   const [inputText, setInputText] = useState('');
   const [LLMText, setLLMText] = useState('');
   const [textSaved, setTextSaved] = useState(false);
@@ -12,6 +12,7 @@ const Journal = ({ username }) => {
   const textareaRef = useRef(null);
   const [countdownTime, setCountdownTime] = useState(timer);
   const [endTime, setEndTime] = useState(Date.now() + timer * 1000);
+  const username = sessionStorage.getItem('username') || '';
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
@@ -24,13 +25,13 @@ const Journal = ({ username }) => {
     }
   }, []);
 
-  useEffect(() => {
-    let timeoutId;
-    if (textSaved) {
-      timeoutId = setTimeout(() => setTextSaved(false), 2000); // resets to false after 2 seconds
-    }
-    return () => clearTimeout(timeoutId);
-  }, [textSaved]);
+  // useEffect(() => {
+  //   let timeoutId;
+  //   if (textSaved) {
+  //     timeoutId = setTimeout(() => setTextSaved(false), 2000); // resets to false after 2 seconds
+  //   }
+  //   return () => clearTimeout(timeoutId);
+  // }, [textSaved]);
 
   useEffect(() => {
     localStorage.setItem('LLMText', LLMText);

@@ -11,8 +11,9 @@ const theme = createTheme({
   },
 });
 
-const Login = ({ username, setUsername }) => {
+const Login = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -57,6 +58,7 @@ const Login = ({ username, setUsername }) => {
 
         if (response.ok) {
           console.log('Login or signup successful');
+          sessionStorage.setItem('username', username);
           navigate('/journal');
         } else {
           console.log('Login or signup unsuccessful');

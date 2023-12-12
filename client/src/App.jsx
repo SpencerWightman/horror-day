@@ -3,6 +3,7 @@ import Login from "./components/login";
 import Journal from "./components/journal";
 import SingleEntry from "./components/single-entry";
 import Entries from "./components/entries";
+import Menu from "./components/menu";
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -49,17 +50,17 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-  const [username, setUsername] = useState("");
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login username={username} setUsername={setUsername} />} />
+        <Route path="/" element={<Login />} />
         <Route 
           path="/journal"
           element={
             <ProtectedRoute>
-              <Journal username={username}/>
+              <Menu />
+              <Journal />
             </ProtectedRoute>
           } 
         />
@@ -67,7 +68,8 @@ const App = () => {
           path="/entry/:id"
           element={
             <ProtectedRoute>
-              <SingleEntry username={username}/>
+              <Menu />
+              <SingleEntry />
             </ProtectedRoute>
           } 
         />
@@ -75,7 +77,8 @@ const App = () => {
           path="/entries"
           element={
             <ProtectedRoute>
-              <Entries username={username}/>
+              <Menu />
+              <Entries />
             </ProtectedRoute>
           } 
         />

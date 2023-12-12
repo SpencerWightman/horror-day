@@ -81,19 +81,19 @@ export const storeEntry = async (user_id, story_id, story) => {
 }
 
 // story_id is creation timestamp
-export const fetchSingleEntry = async (user_id, story_id) => {
+export const fetchSingleEntry = async (userId, stringId) => {
   const dynamoQuery = new QueryCommand({
     TableName: StoryTableName,
     KeyConditionExpression: 'user_id = :user_id and story_id = :story_id',
     ExpressionAttributeValues: {
-      ':user_id': user_id,
-      ':story_id': story_id
+      ':user_id': { 'S': userId },
+      ':story_id': { 'N': stringId }
     }
   });
 
   try {
-    await dynamoClient.send(dynamoQuery);
-    return { status: 'success' };
+    const response = await dynamoClient.send(dynamoQuery);
+    return response.Items[0].story.S;
   } catch (error) {
     console.error('Error fetching from DynamoDB: ', error);
     return { status: 'error', message: error.message };
@@ -106,7 +106,7 @@ export const fetchEntriesTimestamps = async (user_id) => {
     TableName: StoryTableName,
     KeyConditionExpression: 'user_id = :user_id',
     ExpressionAttributeValues: {
-      ':user_id': user_id
+      ':user_id': { 'S': user_id }
     },
     ProjectionExpression: 'story_id'
   });
@@ -114,7 +114,7 @@ export const fetchEntriesTimestamps = async (user_id) => {
   let storyIds = [];
 
   try {
-    const response = await dynamoDocClient.send(dynamoQuery);
+    const response = await dynamoClient.send(dynamoQuery);
     if (response.Items) {
       storyIds = response.Items.map(item => item.story_id);
     }
