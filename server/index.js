@@ -46,8 +46,8 @@ async function getSecret() {
 async function main() {
   const openAIKey = await getSecret();
 
-  // app.use(express.static('dist'));
-  // app.use('/journal', express.static('dist'));
+  app.use(express.static('dist'));
+  app.use('/journal', express.static('dist'));
 
   // login or signup
   // db/dynamo.js async call
@@ -158,17 +158,6 @@ async function main() {
 
   app.get('/health', (req, res) => {
     res.sendStatus(200);
-  });
-
-  // Serve static files from 'dist' directory
-  app.use(express.static('dist'));
-
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-
-  // All other GET requests not handled before will return the React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
   });
 
   app.listen(3000, () => console.log('Server started on port 3000'));

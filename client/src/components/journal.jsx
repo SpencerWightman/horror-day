@@ -18,7 +18,6 @@ const Journal = ({ username }) => {
   };
 
   useEffect(() => {
-    // Retrieve LLMText from localStorage
     const storedLLMText = localStorage.getItem('LLMText');
     if (storedLLMText) {
       setLLMText(storedLLMText);
@@ -34,7 +33,6 @@ const Journal = ({ username }) => {
   }, [textSaved]);
 
   useEffect(() => {
-    // Store LLMText in localStorage
     localStorage.setItem('LLMText', LLMText);
   }, [LLMText]);
 
@@ -56,7 +54,6 @@ const Journal = ({ username }) => {
   useEffect(() => {
     localStorage.setItem('endTime', endTime.toString());
   }, [endTime]);
-  
 
   useEffect(() => {
     const updateCountdown = () => {

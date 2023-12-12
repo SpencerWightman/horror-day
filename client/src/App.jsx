@@ -33,7 +33,7 @@ const useAuth = () => {
   return { isAuthenticated, loading };
 };
 
-const ProtectedRoute = ({ child }) => {
+const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
@@ -45,7 +45,7 @@ const ProtectedRoute = ({ child }) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  return child;
+  return children;
 };
 
 const App = () => {

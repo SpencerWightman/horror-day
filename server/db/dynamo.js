@@ -11,7 +11,7 @@ import bcrypt from 'bcrypt';
 // credentials fetched automatically by SDK lookup chain
 const dynamoClient = new DynamoDBClient({}); 
 const dynamoDocClient = DynamoDBDocumentClient.from(dynamoClient);
-const StoryTableName = 'horrify';
+const StoryTableName = 'horrify-stories';
 const UserTableName = 'horrify-users';
 const saltRounds = 5;
 
