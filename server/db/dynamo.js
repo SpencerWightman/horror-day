@@ -50,13 +50,18 @@ export const validateLogin = async (user_id, pass) => {
     const response = await dynamoDocClient.send(dynamoQuery);
     if (response.Items && response.Items.length > 0) {
       const user = response.Items[0];
-      const isPasswordValid = bcrypt.compare(pass, user.hashedPassword.S);
-      return isPasswordValid;
+      const isPasswordValid = await bcrypt.compare(pass, user.hashedPassword.S);
+      if (isPasswordValid) {
+        return 'valid password';
+      } else {
+        return 'wrong password';
+      }
+    } else {
+      return 'no username';
     }
-    return false;
   } catch (error) {
     console.error('Error validating login DynamoDB: ', error);
-    return false;
+    return 'no username';
   }
 };
 

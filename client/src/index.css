@@ -9,7 +9,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #b4b4b4;
+  background-color: #cecdcd;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -44,3 +44,17 @@
   text-align: justify;
   text-justify: inter-word;
 }
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #991b1b;
+}
+
+.hover-bg-custom:hover {
+  background-color: #991b1b;
+}
+

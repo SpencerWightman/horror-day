@@ -54,13 +54,16 @@ async function main() {
     const password = req.body.password;
 
     try {
-      if (await validateLogin(username, password)) {
+      const status = await validateLogin(username, password);
+      console.log(status);
+      if (status === 'valid password') {
         req.session.authenticated = true;
         res.status(200).send('Logged in');
-      } else if (await storeUser(username, password)) {
+      } else if (status === 'no username') {
+        await storeUser(username, password)
         req.session.authenticated = true;
         res.status(200).send('Signed up and logged in');
-      } else {
+      } else if (status === 'wrong password') {
         console.log('invalid')
         res.status(401).send('Invalid signup or login');
       }

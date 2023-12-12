@@ -62,7 +62,7 @@ const Login = () => {
           navigate('/journal');
         } else {
           console.log('Login or signup unsuccessful');
-          setError('Incorrect password');
+          setError('Invalid password');
         }
       } catch (error) {
         console.error('An error occurred', error);

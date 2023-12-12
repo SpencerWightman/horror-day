@@ -12,15 +12,23 @@ const Menu = () => {
 
   return (
     <div style={{ position: 'fixed', top: 10, right: 10 }}>
-      <button onClick={() => setIsOpen(!isOpen)}>Menu</button>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
       {isOpen && (
-        <div style={{ position: 'absolute', right: 0 }}>
-          <div onClick={() => handleNavigate('/journal')}>Journal</div>
-          <div onClick={() => handleNavigate('/entries')}>Entries</div>
+        <div style={{ 
+          position: 'absolute', 
+          right: 0, 
+          background: 'black',
+        }}>
+          <div onClick={() => handleNavigate('/journal')} className="dropdown-item">Journal</div>
+          <div onClick={() => handleNavigate('/entries')} className="dropdown-item">Entries</div>
         </div>
       )}
     </div>
-  );
+  );  
 };
 
 export default Menu;
