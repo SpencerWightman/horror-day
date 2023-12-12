@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import formatTime from "../utils/format-time.js";
 
-const timer = 10 // 86400 for 24hrs
+const timer = 86400 // 86400 for 24hrs
 
 const Journal = () => {
   const [inputText, setInputText] = useState('');
