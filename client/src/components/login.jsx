@@ -58,7 +58,7 @@ const Login = () => {
 
         if (response.ok) {
           console.log('Login or signup successful');
-          sessionStorage.setItem('username', username);
+          localStorage.setItem('username', username);
           navigate('/journal');
         } else {
           console.log('Login or signup unsuccessful');

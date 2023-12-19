@@ -12,7 +12,7 @@ const Journal = () => {
   const textareaRef = useRef(null);
   const [countdownTime, setCountdownTime] = useState(timer);
   const [endTime, setEndTime] = useState(Date.now() + timer * 1000);
-  const username = sessionStorage.getItem('username') || '';
+  const username = localStorage.getItem('username') || '';
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);

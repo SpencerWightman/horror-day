@@ -6,7 +6,7 @@ import axios from 'axios';
 // add delete ability
 const SingleEntry = () => {
   const [LLMStory, setLLMStory] = useState('');
-  const username = sessionStorage.getItem('username') || '';
+  const username = localStorage.getItem('username') || '';
   const { id } = useParams();
   const readableDate = formatDate(Number(id));
 

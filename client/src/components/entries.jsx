@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const Entries = () => {
   const [entries, setEntries] = useState([]);
   const navigate = useNavigate(); 
-  const username = sessionStorage.getItem('username') || '';
+  const username = localStorage.getItem('username') || '';
 
   useEffect(() => {
     if (!entries.length > 0) {
