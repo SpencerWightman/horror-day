@@ -1,6 +1,5 @@
 import generatePrompt from "./utils/prompt.js";
 import OpenAI from 'openai';
-import bcrypt from 'bcrypt';
 import express from "express";
 import session from 'express-session';
 import cors from 'cors';
@@ -161,6 +160,10 @@ async function main() {
 
   app.get('/health', (req, res) => {
     res.sendStatus(200);
+  });
+
+  app.use('*', (req, res) => {
+    res.redirect('/');
   });
 
   app.listen(3000, () => console.log('Server started on port 3000'));

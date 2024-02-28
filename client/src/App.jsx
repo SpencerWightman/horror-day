@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Login from "./components/login";
 import Journal from "./components/journal";
-import SingleEntry from "./components/single-entry";
 import Entries from "./components/entries";
 import Menu from "./components/menu";
 
@@ -34,6 +33,7 @@ const useAuth = () => {
   return { isAuthenticated, loading };
 };
 
+// eslint-disable-next-line react/prop-types
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
@@ -50,7 +50,6 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-
   return (
     <BrowserRouter>
       <Routes>
@@ -61,15 +60,6 @@ const App = () => {
             <ProtectedRoute>
               <Menu />
               <Journal />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/entry/:id"
-          element={
-            <ProtectedRoute>
-              <Menu />
-              <SingleEntry />
             </ProtectedRoute>
           } 
         />

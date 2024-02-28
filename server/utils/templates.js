@@ -19,7 +19,7 @@ const templates = {
   "weight": "obsession with eating, even if the food has sharp objects in it. ",
   "kids": "children that are actually evil demons in disguise. ",
   "bully": "physical or psychological violence between the main character and a bully. ",
-  "default": `You are a short story horror writer. All your stories are 300-400 words long.
+  "default": `You are a short story horror writer. All your stories are 250-300 words long.
 The following message is a journal entry. Write a disturbing, creepy horror short story 
 based on the journal entry. The main character in your story is the author of the journal entry. 
 Your story must use 3rd person and past tense. Split your story into paragraphs with a blank line between each paragraph. `

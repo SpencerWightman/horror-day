@@ -7,7 +7,10 @@ const timer = 86400 // 86400 for 24hrs
 const Journal = () => {
   const [inputText, setInputText] = useState('');
   const [LLMText, setLLMText] = useState('');
-  const [textSaved, setTextSaved] = useState(false);
+  const [textSaved, setTextSaved] = useState(() => {
+    const saved = localStorage.getItem('textSaved');
+    return saved === 'true';
+  });
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef(null);
   const [countdownTime, setCountdownTime] = useState(timer);
@@ -17,6 +20,10 @@ const Journal = () => {
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
+
+  useEffect(() => {
+    localStorage.setItem('textSaved', textSaved.toString());
+  }, [textSaved]);
 
   useEffect(() => {
     const storedLLMText = localStorage.getItem('LLMText');
@@ -89,6 +96,7 @@ const Journal = () => {
       });
       localStorage.setItem('LLMText', response.data);
       setLLMText(response.data);
+      setTextSaved(false);
       setIsLoading(false);
       setInputText('');
       setEndTime(Date.now() + timer * 1000);
@@ -109,10 +117,8 @@ const Journal = () => {
           LLMText
         }
       });
-
       setTextSaved(true);
     } catch (error) {
-      setIsLoading(false);
       console.error('API error: ', error);
     }
     setIsLoading(false);
@@ -158,7 +164,8 @@ const Journal = () => {
               ))}
               <button
                 onClick={handleSave}
-                className="mt-2 mb-10 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
+                disabled={textSaved}
+                className="mx-auto mt-4 mb-10 bg-black block text-stone-300 font-extrabold py-2.5 px-4 rounded transition duration-200 hover:bg-red-800"
               >
                 {textSaved ? 'STORY SAVED' : 'SAVE YOUR STORY'}
               </button>
